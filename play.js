@@ -1,3 +1,4 @@
+#!/usr/local/bin/node
 // Import API authentication & functions
 const auth = require("./spotifyAuthentication");
 

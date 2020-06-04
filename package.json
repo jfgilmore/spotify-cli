@@ -28,9 +28,9 @@
     "node-fetch": "^2.6.0"
   },
   "bin": {
-    "sp": "play.js",
-    "ss": "pause.js",
-    "sb": "back.js",
-    "sn": "next.js"
+    "sp": "./play.js",
+    "ss": "./pause.js",
+    "sb": "./back.js",
+    "sn": "./next.js"
   }
 }
