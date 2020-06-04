@@ -11,22 +11,22 @@ let method = "GET";
 let url = auth.apiUri + statusEndpoint;
 let current = auth.send(url, method);
 let volumeParam
-let level
+// let level
 
-while (condition) {
+// while (condition) {
   level = readlineSync.question('Volume controls (+/-) or enter desired volume and hit [RETURN]: ');
-  if (level === '+' || level === '=') {
-    current ++
-  } else if (level === '-' || level === '_') {
-    current --
-  } else {
-    current = level;
-  }
+  // if (level === '+' || level === '=') {
+  //   current ++
+  // } else if (level === '-' || level === '_') {
+  //   current --
+  // } else {
+  //   current = level;
+  // }
 
   method = "PUT";
   volumeParam = `?volume_percent=${current}`
   url = auth.apiUri + endpoint + volumeParam;
   auth.send(url, method);
   console.log(auth.chalk.green(`${current}%`));
-}
+// }
 
