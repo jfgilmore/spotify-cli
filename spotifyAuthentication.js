@@ -1,8 +1,9 @@
+#!/usr/local/bin/node
 const chalk = require("chalk");
 const fetch = require("node-fetch");
+const open = require("open");
+const token = "BQBbyTgXd_pzLdePPhNJ5768cbnUyxNtimHxKyrCC3D06D1D7wSrK_jpvNbhpvXdlIX5IxufqKVKhYGeTmvW1SP0Ts7UKoriS1c05Go6B8hvLs3dzhr42BXb10FbXXMks-uhEwh8p4DAm2p5lVYm3wtgVpY";
 const apiUri = "https://api.spotify.com";
-const open = require("open")
-// const token = ;
 const accUri = "https://accounts.spotify.com";
 const clientId = "client_id=7c3e071d9a924d1bb2c9ca3c63b3d963";
 const responseType = "response_type=token";
@@ -10,10 +11,20 @@ const redirectUri = "redirect_uri=http://localhost:3000";
 const scope = "scope=user-modify-playback-state user-read-playback-state";
 const dialogue = "dialog=false";
 
-const authUrl = accUri + "/authorize?" + clientId +"&"+ responseType +"&"+ redirectUri +"&"+ scope +"&"+ dialogue;
+const authUrl =
+	accUri +
+	"/authorize?" +
+	clientId +
+	"&" +
+	responseType +
+	"&" +
+	redirectUri +
+	"&" +
+	scope +
+	"&" +
+	dialogue;
 
-open(authUrl, {wait: true})
-
+// open(authUrl, { wait: true });
 
 const statusEndpoint = "/v1/me/player";
 // const statusUrl = apiUri + statusEndpoint;
@@ -33,7 +44,7 @@ const send = async (url, method) => {
 			throw status;
 		}
 	} catch (error) {
-    // Authentication function
+		// Authentication function
 		console.log(error);
 		console.log(chalk.red("FAILED:"), "Time to log back in!");
 	}
@@ -41,6 +52,6 @@ const send = async (url, method) => {
 
 module.exports = {
 	apiUri,
-  send,
+	send,
 	chalk,
 };

@@ -33,6 +33,8 @@
     "sp": "./play.js",
     "ss": "./pause.js",
     "sb": "./back.js",
-    "sn": "./next.js"
+    "sn": "./next.js",
+    "sv": "./volume.js",
+    "sl": "./spotifyAuthentication.js"
   }
 }
