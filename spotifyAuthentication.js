@@ -2,7 +2,7 @@ const chalk = require("chalk");
 const fetch = require("node-fetch");
 const apiUri = "https://api.spotify.com";
 const token =
-	"BQAeeL4FfxZTgc6I-EPNz1UCWHzT0uJxa0u2gbq3g6R_taT1ytg2CR2qoReRcUOZOtErwJAuzBie7Uf-8f32sFpYjAfLLxroBTrbN1NiWVQ5HKaced5S23RNrhXlffHuxuvdmshDMb1875tDjQrEuQ";
+	"";
 const statusEndpoint = "/v1/me/player";
 // const statusUrl = apiUri + statusEndpoint;
 // const statusMethod = "GET";
