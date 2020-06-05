@@ -1,6 +1,6 @@
 {
   "name": "spotify-cli",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "description": "App that let's you control Spotify from your terminal",
   "main": "authentication.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/jfgilmore/spotify-cli.git"
   },
   "keywords": [
-    "spotify",
+    "Spotify",
     "music",
     "cli",
     "bash",
@@ -27,5 +27,11 @@
     "chalk": "^4.0.0",
     "node-fetch": "^2.6.0",
     "open": "^7.0.4"
+  },
+  "bin": {
+    "sp": "./play.js",
+    "ss": "./pause.js",
+    "sb": "./back.js",
+    "sn": "./next.js"
   }
 }
