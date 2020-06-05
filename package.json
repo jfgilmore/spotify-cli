@@ -25,6 +25,7 @@
   "homepage": "https://github.com/jfgilmore/spotify-cli#readme",
   "dependencies": {
     "chalk": "^4.0.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "open": "^7.0.4"
   }
 }

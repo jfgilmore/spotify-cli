@@ -1,8 +1,20 @@
 const chalk = require("chalk");
 const fetch = require("node-fetch");
 const apiUri = "https://api.spotify.com";
-const token =
-	"";
+const open = require("open")
+// const token = ;
+const accUri = "https://accounts.spotify.com";
+const clientId = "client_id=7c3e071d9a924d1bb2c9ca3c63b3d963";
+const responseType = "response_type=token";
+const redirectUri = "redirect_uri=http://localhost:3000";
+const scope = "scope=user-modify-playback-state user-read-playback-state";
+const dialogue = "dialog=false";
+
+const authUrl = accUri + "/authorize?" + clientId +"&"+ responseType +"&"+ redirectUri +"&"+ scope +"&"+ dialogue;
+
+open(authUrl, {wait: true})
+
+
 const statusEndpoint = "/v1/me/player";
 // const statusUrl = apiUri + statusEndpoint;
 // const statusMethod = "GET";
