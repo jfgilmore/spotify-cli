@@ -1,11 +1,30 @@
 {
   "name": "spotify-cli",
   "version": "1.0.0",
-  "main": "index.js",
-  "repository": "https://github.com/jfgilmore/spotify-cli.git",
-  "author": "30night <haroscmil2011@gmail.com>",
+  "description": "App that let's you control Spotify from your terminal",
+  "main": "authentication.js",
+  "scripts": {
+    "test": "play"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfgilmore/spotify-cli.git"
+  },
+  "keywords": [
+    "spotify",
+    "music",
+    "cli",
+    "bash",
+    "zsh"
+  ],
+  "author": "Harley Jenks & Joshua Gilmore",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jfgilmore/spotify-cli/issues"
+  },
+  "homepage": "https://github.com/jfgilmore/spotify-cli#readme",
   "dependencies": {
+    "chalk": "^4.0.0",
     "node-fetch": "^2.6.0"
   }
 }
