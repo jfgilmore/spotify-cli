@@ -18,7 +18,7 @@
     "zsh"
   ],
   "author": "Harley Jenks & Joshua Gilmore",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jfgilmore/spotify-cli/issues"
   },
