@@ -18,14 +18,15 @@
     "zsh"
   ],
   "author": "Harley Jenks & Joshua Gilmore",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/jfgilmore/spotify-cli/issues"
   },
   "homepage": "https://github.com/jfgilmore/spotify-cli#readme",
   "dependencies": {
     "chalk": "^4.0.0",
-    "node-fetch": "^2.6.0"
+    "node-fetch": "^2.6.0",
+    "open": "^7.0.4"
   },
   "bin": {
     "sp": "./play.js",
