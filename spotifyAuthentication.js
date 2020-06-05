@@ -35,6 +35,7 @@ const send = async (url, method) => {
 	} catch (error) {
     // Authentication function
 		console.log(error);
+		console.log(chalk.red("FAILED:"), "Time to log back in!");
 	}
 };
 
