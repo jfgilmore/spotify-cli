@@ -30,11 +30,11 @@
     "open": "^7.0.4"
   },
   "bin": {
-    "sp": "./play.js",
-    "ss": "./pause.js",
-    "sb": "./back.js",
-    "sn": "./next.js",
-    "sv": "./volume.js",
+    "sp": "./actions/play.js",
+    "ss": "./actions/pause.js",
+    "sb": "./actions/back.js",
+    "sn": "./actions/next.js",
+    "sv": "./actions/volume.js",
     "sl": "./spotifyAuthentication.js"
   }
 }
