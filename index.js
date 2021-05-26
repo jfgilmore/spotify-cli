@@ -18,8 +18,10 @@ if (process.env.NODE_ENV !== "production") {
 const apiUri = "https://api.spotify.com";
 const accUri = "https://accounts.spotify.com";
 const player = apiUri + "/v1/me/player/";
-const hostname = "127.0.0.1";
-const port = 3000;
+const file = homedir + "/.spotify-cli.yml";
+const hostname = process.env.HOST;
+const port = process.env.PORT;
+const proxyUri = `https://${hostname}${port ? ":" : ""}${port}`;
 const config = {
   client: {
     id: process.env.SPOTIFY_ID,
@@ -38,11 +40,15 @@ const spotify = {
     console.log(chalk.green(msg));
   },
   token: (tokens = false) => {
-    const file = homedir + "/.spotify-cli.yml";
-
     if (tokens) {
       try {
-        const { access_token, refresh_token } = tokens;
+        let { access_token, refresh_token } = tokens;
+
+        if (!refresh_token) {
+          const oldTokens = fs.readFileSync(file, "utf8");
+          refresh_token = YAML.parse(oldTokens).refresh_token;
+        }
+
         fs.writeFileSync(
           file,
           `${YAML.stringify({ access_token, refresh_token })}`,
@@ -51,6 +57,7 @@ const spotify = {
             console.log("Credentials saved.");
           }
         );
+
         return access_token;
       } catch (err) {
         console.log("Failed to create credential file:", err);
@@ -68,46 +75,31 @@ const spotify = {
           err.path === file
         ) {
           console.log("Attempting refresh...\n");
-          return spotify.refresh(refresh_token);
+          return spotify.refresh();
         }
       }
     }
   },
-  refresh: (refToken) => {
+  refresh: async () => {
+    const tokens = fs.readFileSync(file, "utf8");
+    const { refresh_token } = YAML.parse(tokens);
     const client = new AuthorizationCode(config);
-
     const reqParams = {
       grant_type: "refresh_token",
-      refresh_token,
+      refresh_token: refresh_token,
     };
 
-    const server = http.createServer((req, res) => {
-      const urlObj = new URL(req.url, "https://localhost:3000");
-      const code = urlObj.searchParams.get("code");
-
-      if (code) {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "text/plain");
-        res.setHeader("X-Frame-Options", "DENY");
-        res.end("Where done here, go back to whence you came!\n");
-
-        grabToken(code);
+    try {
+      const accessToken = await client.getToken(reqParams);
+      return spotify.token(accessToken.token);
+    } catch (err) {
+      if (err.output.statusCode === 400) {
+        console.error("UNHANDLED_ERROR: Refresh Token Error", err);
+        return spotify.auth();
       }
-    });
-
-    server.listen(port, hostname);
-
-    async () => {
-      try {
-        const accessToken = await client.getToken(reqParams);
-        server.close();
-        return spotify.token(accessToken);
-      } catch (error) {
-        console.log("Refresh Token Error", error.message);
-        server.close();
-        return false;
-      }
-    };
+      console.error("UNHANDLED_ERROR: Refresh Token Error", err);
+      return false;
+    }
   },
   auth: async () => {
     const client = new AuthorizationCode(config);
@@ -119,7 +111,7 @@ const spotify = {
       .digest("hex");
 
     const authorizationUri = client.authorizeURL({
-      redirect_uri: "http://localhost:3000",
+      redirect_uri: proxyUri,
       scope: "user-modify-playback-state user-read-playback-state",
       response_type: "code",
       state: state,
@@ -127,7 +119,7 @@ const spotify = {
     });
 
     const server = http.createServer((req, res) => {
-      const urlObj = new URL(req.url, "https://localhost:3000");
+      const urlObj = new URL(req.url, proxyUri);
       const code = urlObj.searchParams.get("code");
 
       if (code) {
@@ -145,19 +137,18 @@ const spotify = {
     open(authorizationUri);
 
     const grabToken = async (code) => {
+      server.close();
       const tokenParams = {
         code: code,
         grant_type: "authorization_code",
-        redirect_uri: "http://localhost:3000",
+        redirect_uri: proxyUri,
       };
 
       try {
         const accessToken = await client.getToken(tokenParams);
-        server.close();
         return spotify.token(accessToken.token);
       } catch (error) {
         console.log("Access Token Error", error.message);
-        server.close();
         return false;
       }
     };
@@ -196,8 +187,7 @@ const spotify = {
             chalk.red("FAILED:"),
             "Attempting to retrieve new token.\n"
           );
-          spotify.token("");
-          spotify.auth();
+          spotify.refresh();
         } else {
           console.log(
             chalk.red("FAILED: Unable to retrieve new token.", error)
@@ -282,8 +272,4 @@ const spotify = {
   },
 };
 
-module.exports = {
-  apiUri,
-  spotify,
-  chalk,
-};
+module.exports = spotify;

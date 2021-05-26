@@ -28,4 +28,4 @@ These will allow you to play, pause, skip forward and back, and adjust the volum
 
 ## Authentication
 
-_spotify-cli_ uses an authorization code flow to gain an access token for Spotify's API services. You will be taken to a browser page to log in and authorize spotify-cli on your account. Once this is done you can freely use the simlinked commands from any terminal instance on your machine 🙂
+_spotify-cli_ uses an authorization code flow to gain an access token for Spotify's API services. You will be taken to a browser page to log in and authorize spotify-cli on your account. Once this is done you can freely use the sim linked commands from any terminal instance on your machine 🙂

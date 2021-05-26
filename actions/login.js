@@ -1,3 +1,3 @@
 #!/usr/local/bin/node
 const spotify = require("../index");
-spotify.next();
+spotify.auth();
