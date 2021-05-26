@@ -17,7 +17,7 @@
     "bash",
     "zsh"
   ],
-  "author": "Harley Jenks & Joshua Gilmore",
+  "author": "jfgilmore & 30night",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/jfgilmore/spotify-cli/issues"
@@ -25,16 +25,21 @@
   "homepage": "https://github.com/jfgilmore/spotify-cli#readme",
   "dependencies": {
     "chalk": "^4.0.0",
+    "dotenv": "^10.0.0",
     "node-fetch": "^2.6.1",
+    "open": "^7.3.0",
+    "prompts": "^2.3.2",
     "readline-sync": "^1.4.10",
-    "open": "^7.0.4"
+    "simple-oauth2": "^4.1.0",
+    "yaml": "^1.10.0"
   },
   "bin": {
     "sp": "./actions/play.js",
     "ss": "./actions/pause.js",
+    "sc": "./actions/device.js",
     "sb": "./actions/back.js",
     "sn": "./actions/next.js",
     "sv": "./actions/volume.js",
-    "sl": "./spotifyAuthentication.js"
+    "sl": "./actions/login.js"
   }
 }

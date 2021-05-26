@@ -1,16 +1,16 @@
 # spotify-cli
 
-## IMPORTANT NOTICE:
+## IMPORTANT NOTICE
 
-This project was written over the course of an afternoon and is not fully functional right now. I am wrorking on it occasionally, but there is a little ways to go. The authentication flow needs to be completed, at this point it requires manual intervention to copy and paste the access token into `spotifyAuthentication.js` as the Authorization header Bearer token. The token currently hardcoded there won't get you anything as it has been voided 😉
-
-Why: The token is currently returned by spotify as a query string 😒 so I can't just grab it with a local server which had been my original intention. I am however working on a proxy that should handle this, and also stop me exposing the applications Client ID so publically, not that you can get far without the secret anyway 😝. But yes it needs some work.
+The authentication flow needs to be completed, right now the applications credentials SPOTIFY_ID and SPOTIFY_SECRET aren't hosted anywhere but on my dev server. You could always implement your own in your personal dev environment or await me picking up my game and finally finishing the proxy. Your choice.
 
 ## About
 
-NodeJS Terminal app that allows spotify playback control from your terminal app.
+Spotify playback control from your terminal app using node.
 
-The implicit authentication will be revised as does not function outside of a browser context.
+Authentication with Spotify achieved using OAuth2.
+
+I am fleshing out some more features after the upgrades I have made. Soon I hope to be able to select the playback device from the terminal too 🤘
 
 ## Instructions
 
