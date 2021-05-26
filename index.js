@@ -121,14 +121,20 @@ const spotify = {
     const server = http.createServer((req, res) => {
       const urlObj = new URL(req.url, proxyUri);
       const code = urlObj.searchParams.get("code");
+      const returnedState = urlObj.searchParams.get("state");
+      const error = urlObj.searchParams.get("error");
 
-      if (code) {
+      if (code && returnedState === state) {
         res.statusCode = 200;
         res.setHeader("Content-Type", "text/plain");
         res.setHeader("X-Frame-Options", "DENY");
         res.end("Where done here, go back to whence you came!\n");
 
         grabToken(code);
+      } else if (error && returnedState === state) {
+        server.close();
+        console.error("OAUTH_PROCESS_ERROR:", error);
+        return false;
       }
     });
 

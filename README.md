@@ -22,6 +22,7 @@ Run `npm link` from within the root directory of spotify-cli in your terminal an
 `sn`: next
 `sv`: volume
 `sl`: login
+`sc`: change playback device (the device must be online and recently used)
 
 These will allow you to play, pause, skip forward and back, and adjust the volume of whatever device or group of devices you are currently playing on.
 `sl` will launch authentication, this will also automatically run if there isn't a current session open and you use another of the commands.
