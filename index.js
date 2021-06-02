@@ -17,6 +17,7 @@ if (process.env.NODE_ENV !== "production") {
 
 const apiUri = "https://api.spotify.com";
 const accUri = "https://accounts.spotify.com";
+const scopes = "user-modify-playback-state user-read-playback-state";
 const player = apiUri + "/v1/me/player/";
 const file = homedir + "/.spotify-cli.yml";
 const hostname = process.env.HOST;
@@ -34,10 +35,14 @@ const config = {
     tokenPath: "/api/token",
   },
 };
+const GET = "GET";
+const PUT = "PUT";
+const POST = "POST";
+const UTF8 = "utf8";
 
 const spotify = {
   successMsg: (msg) => {
-    console.log(chalk.green(msg));
+    console.log(chalk.green(msg)); // Spotify green: #1DB954 unavailable in terminal
   },
   token: (tokens = false) => {
     if (tokens) {
@@ -45,7 +50,7 @@ const spotify = {
         let { access_token, refresh_token } = tokens;
 
         if (!refresh_token) {
-          const oldTokens = fs.readFileSync(file, "utf8");
+          const oldTokens = fs.readFileSync(file, UTF8);
           refresh_token = YAML.parse(oldTokens).refresh_token;
         }
 
@@ -64,7 +69,7 @@ const spotify = {
       }
     } else {
       try {
-        const tokens = fs.readFileSync(file, "utf8");
+        const tokens = fs.readFileSync(file, UTF8);
         const { access_token } = YAML.parse(tokens);
         return access_token;
       } catch (err) {
@@ -81,7 +86,7 @@ const spotify = {
     }
   },
   refresh: async () => {
-    const tokens = fs.readFileSync(file, "utf8");
+    const tokens = fs.readFileSync(file, UTF8);
     const { refresh_token } = YAML.parse(tokens);
     const client = new AuthorizationCode(config);
     const reqParams = {
@@ -94,10 +99,9 @@ const spotify = {
       return spotify.token(accessToken.token);
     } catch (err) {
       if (err.output.statusCode === 400) {
-        console.error("UNHANDLED_ERROR: Refresh Token Error", err);
         return spotify.auth();
       }
-      console.error("UNHANDLED_ERROR: Refresh Token Error", err);
+      console.error("UNHANDLED_ERROR: Refresh token failure", err);
       return false;
     }
   },
@@ -112,7 +116,7 @@ const spotify = {
 
     const authorizationUri = client.authorizeURL({
       redirect_uri: proxyUri,
-      scope: "user-modify-playback-state user-read-playback-state",
+      scope: scopes,
       response_type: "code",
       state: state,
       show_dialog: false,
@@ -177,69 +181,103 @@ const spotify = {
         const response = await fetch(url, init);
         const status = await response.status;
 
-        if (status === 401) {
+        if (status === 401 || status === 403) {
           throw status;
         } else if (returnData) {
-          const data = await response.json();
-          return data;
+          // When data requested
+          if (status === 200) {
+            // When payload present
+            const data = await response.json();
+            return data;
+          }
+          if (status === 204) {
+            return true;
+          }
+          return false;
         } else {
           return status;
         }
       } catch (error) {
-        // Authentication function
+        // Authentication failure
         if (errCount++ < maxTries && error === 401) {
           // Unauthorized
-          console.log(
-            chalk.red("FAILED:"),
-            "Attempting to retrieve new token.\n"
-          );
+          console.error("FAILED: Attempting to retrieve new token.\n");
           spotify.refresh();
-        } else {
-          console.log(
-            chalk.red("FAILED: Unable to retrieve new token.", error)
-          );
+        } else if (error === 403) {
+          // Forbidden
           return false;
+        } else {
+          console.error("FAILED: Unable to retrieve new token.", error);
         }
       }
     }
   },
   get: async (url) => {
-    const data = await spotify.send(url, "GET", true);
+    const data = await spotify.send(url, GET, true);
     return data;
   },
+  playPause: async () => {
+    const { is_playing } = await spotify.get(player);
+    if (is_playing) {
+      spotify.pause();
+    } else {
+      spotify.play();
+    }
+  },
   play: async () => {
-    const res = await spotify.send(player + "play", "PUT");
+    const res = await spotify.send(player + "play", PUT);
     if (res) {
-      spotify.successMsg(`Play`);
+      spotify.successMsg("Play");
     }
   },
   pause: async () => {
-    const res = await spotify.send(player + "pause", "PUT");
+    const res = await spotify.send(player + "pause", PUT);
     if (res) {
-      spotify.successMsg(`Pause`);
+      spotify.successMsg("Pause");
     }
   },
-  next: () => {
-    const res = spotify.send(player + "next", "POST");
+  next: async () => {
+    const res = await spotify.send(player + "next", POST);
     if (res) {
-      spotify.successMsg(`Next`);
+      spotify.successMsg("Next");
     }
   },
-  back: () => {
-    const res = spotify.send(player + "back", "POST");
+  back: async () => {
+    const res = await spotify.send(player + "previous", POST);
     if (res) {
-      spotify.successMsg(`Back`);
+      spotify.successMsg("Back");
+    } else {
+      console.error("Not possible");
     }
   },
-  vol: () => {
+  repeat: async (state = "") => {
+    // state: {"track" | "context" | "off"}
+    const newState = { track: "off", context: "track", off: "context" };
+    let stateParam = state;
+    if (state === "") {
+      const { repeat_state } = await spotify.get(player);
+      if (repeat_state) {
+        stateParam = newState[repeat_state];
+      } else {
+        console.error("No active player");
+        return null;
+      }
+    }
+
+    let url = player + "repeat?" + `state=${stateParam}`;
+    const res = await spotify.send(url, PUT);
+    if (res) {
+      spotify.successMsg(`Repeat: ${stateParam}`);
+    }
+  },
+  vol: async () => {
     let level = readlineSync.question(
-      "Volume controls (+/-) or enter desired volume and hit [RETURN]: "
+      "Enter desired volume and hit [RETURN]: "
     );
     let volumeParam = `volume_percent=${level}`;
     let url = player + "volume?" + volumeParam;
 
-    const success = spotify.send(url, "PUT");
-    console.log(success);
+    const success = await spotify.send(url, PUT);
     if (success) {
       spotify.successMsg(`${level}%`);
     }
@@ -266,8 +304,10 @@ const spotify = {
         body.device_ids = [body.device_ids];
         body.play = true;
 
-        const response = await spotify.send(player, "PUT", false, body);
-        console.log(response);
+        const response = await spotify.send(player, PUT, false, body);
+        if (response) {
+          spotify.successMsg(`Now playing on ${device.name}`);
+        }
       } else {
         spotify.successMsg("Only one device available:");
         console.log(chalk.grey(`${devices[0].name}`));
