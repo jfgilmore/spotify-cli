@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import chalk from "chalk";
-import { apiUri, send } from "../index";
+import { apiUri, send } from "../index.mjs";
 import { question } from "readline-sync";
 
 const endpoint = "/v1/me/player/volume";
