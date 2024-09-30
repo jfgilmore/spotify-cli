@@ -1,16 +1,14 @@
-#!/usr/local/bin/node
-// Import API authentication & functions
-const auth = require("../spotifyAuthentication");
-const readlineSync = require("readline-sync");
+#!/usr/bin/env node
+import { apiUri, send, chalk } from "../spotifyAuthentication";
+import { question } from "readline-sync";
 
-// Method specific constants
 const endpoint = "/v1/me/player/volume";
 const method = "PUT";
-let level = readlineSync.question(
+let level = question(
   "Volume controls (+/-) or enter desired volume and hit [RETURN]: "
 );
 let volumeParam = `?volume_percent=${level}`;
-let url = auth.apiUri + endpoint + volumeParam;
+let url = apiUri + endpoint + volumeParam;
 
-auth.send(url, method);
-console.log(auth.chalk.green(`${level}%`));
+send(url, method);
+console.log(chalk.green(`${level}%`));

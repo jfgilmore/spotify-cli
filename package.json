@@ -4,7 +4,8 @@
   "description": "App that let's you control Spotify from your terminal",
   "main": "authentication.js",
   "scripts": {
-    "test": "play"
+    "test": "play",
+    "auth": "./spotifyAuthentication.mjs"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,10 @@
   },
   "homepage": "https://github.com/jfgilmore/spotify-cli#readme",
   "dependencies": {
-    "chalk": "^4.0.0",
-    "node-fetch": "^2.6.7",
-    "readline-sync": "^1.4.10",
-    "open": "^7.0.4"
+    "chalk": "^5.3.0",
+    "node-fetch": "^3.3.2",
+    "open": "^10.1.0",
+    "readline-sync": "^1.4.10"
   },
   "bin": {
     "sp": "./actions/play.js",
@@ -35,6 +36,7 @@
     "sb": "./actions/back.js",
     "sn": "./actions/next.js",
     "sv": "./actions/volume.js",
-    "sl": "./spotifyAuthentication.js"
-  }
+    "sl": "./spotifyAuthentication.mjs"
+  },
+  "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }
