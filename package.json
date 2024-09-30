@@ -5,7 +5,7 @@
   "main": "authentication.js",
   "scripts": {
     "test": "play",
-    "auth": "./spotifyAuthentication.mjs"
+    "auth": "./actions/auth.mjs"
   },
   "repository": {
     "type": "git",
@@ -31,12 +31,12 @@
     "readline-sync": "^1.4.10"
   },
   "bin": {
-    "sp": "./actions/play.js",
-    "ss": "./actions/pause.js",
-    "sb": "./actions/back.js",
-    "sn": "./actions/next.js",
-    "sv": "./actions/volume.js",
-    "sl": "./spotifyAuthentication.mjs"
+    "sp": "./actions/play.mjs",
+    "ss": "./actions/pause.mjs",
+    "sb": "./actions/back.mjs",
+    "sn": "./actions/next.mjs",
+    "sv": "./actions/volume.mjs",
+    "sl": "./actions/auth.mjs"
   },
   "packageManager": "pnpm@9.11.0+sha512.0a203ffaed5a3f63242cd064c8fb5892366c103e328079318f78062f24ea8c9d50bc6a47aa3567cabefd824d170e78fa2745ed1f16b132e16436146b7688f19b"
 }

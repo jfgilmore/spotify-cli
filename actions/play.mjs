@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { apiUri, send, chalk } from "../spotifyAuthentication";
+import chalk from "chalk";
+import { apiUri, send } from "../index.mjs";
 
 const endpoint = "/v1/me/player/play";
 const method = "PUT";
