@@ -6,7 +6,8 @@ import { question } from "readline-sync";
 const endpoint = "/v1/me/player/volume";
 const method = "PUT";
 let level = question(
-  "Volume controls (+/-) or enter desired volume and hit [RETURN]: "
+  "Enter desired volume and hit [RETURN]: "
+  // TODO: Volume controls (+/-) or
 );
 let volumeParam = `?volume_percent=${level}`;
 let url = apiUri + endpoint + volumeParam;
