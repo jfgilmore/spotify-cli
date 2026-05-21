@@ -1,4 +1,4 @@
 #!node
 // Import API authentication & functions
 const spotify = require("../index").default;
-spotify.vol(process.argv[2]);
+spotify.playing();

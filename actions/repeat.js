@@ -1,5 +1,5 @@
-#!/usr/local/bin/node
-const spotify = require("../index");
+#!node
+const spotify = require("../index").default;
 
 let option = process.argv.slice(2)[0];
 

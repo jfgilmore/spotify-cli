@@ -1,18 +1,21 @@
-#!/usr/local/bin/node
-const chalk = require("chalk");
-const crypto = require("crypto");
-const fs = require("fs");
-const http = require("http");
-const fetch = require("node-fetch");
-const readlineSync = require("readline-sync");
-const { AuthorizationCode } = require("simple-oauth2");
-const open = require("open");
-const homedir = require("os").homedir();
-const prompt = require("prompts");
-const { URL } = require("url");
-const YAML = require("yaml");
+#!node
+import chalk from "chalk";
+import { createHash } from "crypto";
+import { readFileSync, writeFileSync } from "fs";
+import { createServer } from "http";
+import { question } from "readline-sync";
+import { AuthorizationCode } from "simple-oauth2";
+import open from "open";
+import os from 'os';
+import dotenv from 'dotenv';
+import prompt from "prompts";
+import { URL } from "url";
+import { parse, stringify } from "yaml";
+
+const homedir = os.homedir();
+
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
+  dotenv.config();
 }
 
 const apiUri = "https://api.spotify.com";
@@ -22,7 +25,8 @@ const player = apiUri + "/v1/me/player/";
 const file = homedir + "/.spotify-cli.yml";
 const hostname = process.env.HOST;
 const port = process.env.PORT;
-const proxyUri = `https://${hostname}${port ? ":" : ""}${port}`;
+const proxyUri = `http://${hostname}${port ? ":" : ""}${port}`;
+const redirectUri = `${proxyUri}/oauth2/callback`;
 const config = {
   client: {
     id: process.env.SPOTIFY_ID,
@@ -50,13 +54,13 @@ const spotify = {
         let { access_token, refresh_token } = tokens;
 
         if (!refresh_token) {
-          const oldTokens = fs.readFileSync(file, UTF8);
-          refresh_token = YAML.parse(oldTokens).refresh_token;
+          const oldTokens = readFileSync(file, UTF8);
+          refresh_token = parse(oldTokens).refresh_token;
         }
 
-        fs.writeFileSync(
+        writeFileSync(
           file,
-          `${YAML.stringify({ access_token, refresh_token })}`,
+          `${stringify({ access_token, refresh_token })}`,
           (err) => {
             if (err) throw err;
             console.log("Credentials saved.");
@@ -69,8 +73,8 @@ const spotify = {
       }
     } else {
       try {
-        const tokens = fs.readFileSync(file, UTF8);
-        const { access_token } = YAML.parse(tokens);
+        const tokens = readFileSync(file, UTF8);
+        const { access_token } = parse(tokens);
         return access_token;
       } catch (err) {
         if (
@@ -86,8 +90,8 @@ const spotify = {
     }
   },
   refresh: async () => {
-    const tokens = fs.readFileSync(file, UTF8);
-    const { refresh_token } = YAML.parse(tokens);
+    const tokens = readFileSync(file, UTF8);
+    const { refresh_token } = parse(tokens);
     const client = new AuthorizationCode(config);
     const reqParams = {
       grant_type: "refresh_token",
@@ -109,20 +113,19 @@ const spotify = {
     const client = new AuthorizationCode(config);
     const current_date = new Date().valueOf().toString();
     const rand = Math.random().toString(16);
-    const state = crypto
-      .createHash("sha1")
+    const state = createHash("sha1")
       .update(current_date + rand)
       .digest("hex");
 
     const authorizationUri = client.authorizeURL({
-      redirect_uri: proxyUri,
+      redirect_uri: redirectUri,
       scope: scopes,
       response_type: "code",
       state: state,
       show_dialog: false,
     });
 
-    const server = http.createServer((req, res) => {
+    const server = createServer((req, res) => {
       const urlObj = new URL(req.url, proxyUri);
       const code = urlObj.searchParams.get("code");
       const returnedState = urlObj.searchParams.get("state");
@@ -151,7 +154,7 @@ const spotify = {
       const tokenParams = {
         code: code,
         grant_type: "authorization_code",
-        redirect_uri: proxyUri,
+        redirect_uri: redirectUri,
       };
 
       try {
@@ -179,7 +182,7 @@ const spotify = {
         }
 
         const response = await fetch(url, init);
-        const status = await response.status;
+        const status = response.status;
 
         if (status === 401 || status === 403) {
           throw status;
@@ -270,12 +273,17 @@ const spotify = {
       spotify.successMsg(`Repeat: ${stateParam}`);
     }
   },
-  vol: async () => {
-    let level = readlineSync.question(
-      "Enter desired volume and hit [RETURN]: "
-    );
-    let volumeParam = `volume_percent=${level}`;
-    let url = player + "volume?" + volumeParam;
+  vol: async (lvl) => {
+    let level = parseInt(lvl);
+    level =
+      typeof lvl !== "undefined" && !isNaN(level)
+        ? parseInt(lvl)
+        : question("Enter desired volume and hit [RETURN]: ");
+    console.log(level);
+    if (level === undefined) return;
+
+    const volumeParam = `volume_percent=${level}`;
+    const url = player + "volume?" + volumeParam;
 
     const success = await spotify.send(url, PUT);
     if (success) {
@@ -308,14 +316,25 @@ const spotify = {
         if (response) {
           spotify.successMsg(`Now playing on ${device.name}`);
         }
+      } else if (devices.length === 0) {
+        spotify.successMsg("No active devices.");
       } else {
         spotify.successMsg("Only one device available:");
-        console.log(chalk.grey(`${devices[0].name}`));
+        console.log(chalk.grey(`${devices?.[0]?.name}`));
       }
     } catch (err) {
       console.log(err);
     }
   },
+  playing: async () => {
+    const response = await spotify.get(player + "currently-playing");
+
+    spotify.successMsg(
+      `${response.item.name} - ${response.item.artists
+        .map(({ name }) => name)
+        .join(", ")}`
+    );
+  },
 };
 
-module.exports = spotify;
+export default spotify;
