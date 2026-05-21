@@ -184,7 +184,7 @@ const spotify = {
         const response = await fetch(url, init);
         const status = response.status;
 
-        if (status === 401 || status === 403) {
+        if (status >= 401 && status <= 404) {
           throw status;
         } else if (returnData) {
           // When data requested
@@ -211,6 +211,7 @@ const spotify = {
           return false;
         } else {
           console.error("FAILED: Unable to retrieve new token.", error);
+          return false;
         }
       }
     }
