@@ -27,6 +27,7 @@ Run `npm link spotify-cli` from within the spotify-cli directory in your termina
 `sd`: change playback device _note: the device must be online and recently used_
 `sr`: toggle repeat mode
 `ss`: toggle shuffle mode **_not yet implemented_**
+`swhat`: display what's currently playing
 
 These will allow you to play, pause, skip forward and back, and adjust the volume of whatever device or group of devices you are currently playing on.
 `sl` will launch authentication, this will also automatically run if there isn't a current session open and you use another of the commands.
